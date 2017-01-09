@@ -1,0 +1,208 @@
+State 0:
+          main ::= * state
+          state ::= * expr
+          expr ::= * expr MINUS expr
+          expr ::= * expr PLUS expr
+          expr ::= * expr TIMES expr
+          expr ::= * expr DIVIDE expr
+          expr ::= * func
+          func ::= * NAME LEFTPAREN expr RIGHTPAREN
+          expr ::= * NUM
+          expr ::= * NAME
+
+                          NAME shift  11
+                           NUM shift  12
+                          expr shift  7
+                          func shift  16
+                          main accept
+                         state shift  10
+
+State 1:
+          expr ::= * expr MINUS expr
+          expr ::= * expr PLUS expr
+          expr ::= * expr TIMES expr
+          expr ::= * expr DIVIDE expr
+          expr ::= expr DIVIDE * expr
+          expr ::= * func
+          func ::= * NAME LEFTPAREN expr RIGHTPAREN
+          expr ::= * NUM
+          expr ::= * NAME
+
+                          NAME shift  11
+                           NUM shift  12
+                          expr shift  13
+                          func shift  16
+
+State 2:
+          expr ::= * expr MINUS expr
+          expr ::= expr MINUS * expr
+          expr ::= * expr PLUS expr
+          expr ::= * expr TIMES expr
+          expr ::= * expr DIVIDE expr
+          expr ::= * func
+          func ::= * NAME LEFTPAREN expr RIGHTPAREN
+          expr ::= * NUM
+          expr ::= * NAME
+
+                          NAME shift  11
+                           NUM shift  12
+                          expr shift  9
+                          func shift  16
+
+State 3:
+          expr ::= * expr MINUS expr
+          expr ::= * expr PLUS expr
+          expr ::= expr PLUS * expr
+          expr ::= * expr TIMES expr
+          expr ::= * expr DIVIDE expr
+          expr ::= * func
+          func ::= * NAME LEFTPAREN expr RIGHTPAREN
+          expr ::= * NUM
+          expr ::= * NAME
+
+                          NAME shift  11
+                           NUM shift  12
+                          expr shift  8
+                          func shift  16
+
+State 4:
+          expr ::= * expr MINUS expr
+          expr ::= * expr PLUS expr
+          expr ::= * expr TIMES expr
+          expr ::= expr TIMES * expr
+          expr ::= * expr DIVIDE expr
+          expr ::= * func
+          func ::= * NAME LEFTPAREN expr RIGHTPAREN
+          expr ::= * NUM
+          expr ::= * NAME
+
+                          NAME shift  11
+                           NUM shift  12
+                          expr shift  14
+                          func shift  16
+
+State 5:
+          expr ::= * expr MINUS expr
+          expr ::= * expr PLUS expr
+          expr ::= * expr TIMES expr
+          expr ::= * expr DIVIDE expr
+          expr ::= * func
+          func ::= * NAME LEFTPAREN expr RIGHTPAREN
+          func ::= NAME LEFTPAREN * expr RIGHTPAREN
+          expr ::= * NUM
+          expr ::= * NAME
+
+                          NAME shift  11
+                           NUM shift  12
+                          expr shift  6
+                          func shift  16
+
+State 6:
+          expr ::= expr * MINUS expr
+          expr ::= expr * PLUS expr
+          expr ::= expr * TIMES expr
+          expr ::= expr * DIVIDE expr
+          func ::= NAME LEFTPAREN expr * RIGHTPAREN
+
+                          PLUS shift  3
+                         MINUS shift  2
+                        DIVIDE shift  1
+                         TIMES shift  4
+                    RIGHTPAREN shift  15
+
+State 7:
+      (1) state ::= expr *
+          expr ::= expr * MINUS expr
+          expr ::= expr * PLUS expr
+          expr ::= expr * TIMES expr
+          expr ::= expr * DIVIDE expr
+
+                          PLUS shift  3
+                         MINUS shift  2
+                        DIVIDE shift  1
+                         TIMES shift  4
+                     {default} reduce 1
+
+State 8:
+          expr ::= expr * MINUS expr
+          expr ::= expr * PLUS expr
+      (3) expr ::= expr PLUS expr *
+          expr ::= expr * TIMES expr
+          expr ::= expr * DIVIDE expr
+
+                        DIVIDE shift  1
+                         TIMES shift  4
+                     {default} reduce 3
+
+State 9:
+          expr ::= expr * MINUS expr
+      (2) expr ::= expr MINUS expr *
+          expr ::= expr * PLUS expr
+          expr ::= expr * TIMES expr
+          expr ::= expr * DIVIDE expr
+
+                        DIVIDE shift  1
+                         TIMES shift  4
+                     {default} reduce 2
+
+State 10:
+      (0) main ::= state *
+
+                             $ reduce 0
+
+State 11:
+          func ::= NAME * LEFTPAREN expr RIGHTPAREN
+      (9) expr ::= NAME *
+
+                     LEFTPAREN shift  5
+                     {default} reduce 9
+
+State 12:
+      (8) expr ::= NUM *
+
+                     {default} reduce 8
+
+State 13:
+          expr ::= expr * MINUS expr
+          expr ::= expr * PLUS expr
+          expr ::= expr * TIMES expr
+          expr ::= expr * DIVIDE expr
+      (5) expr ::= expr DIVIDE expr *
+
+                     {default} reduce 5
+
+State 14:
+          expr ::= expr * MINUS expr
+          expr ::= expr * PLUS expr
+          expr ::= expr * TIMES expr
+      (4) expr ::= expr TIMES expr *
+          expr ::= expr * DIVIDE expr
+
+                     {default} reduce 4
+
+State 15:
+      (7) func ::= NAME LEFTPAREN expr RIGHTPAREN *
+
+                     {default} reduce 7
+
+State 16:
+      (6) expr ::= func *
+
+                     {default} reduce 6
+
+----------------------------------------------------
+Symbols:
+    0: $:
+    1: PLUS
+    2: MINUS
+    3: DIVIDE
+    4: TIMES
+    5: NAME
+    6: LEFTPAREN
+    7: RIGHTPAREN
+    8: NUM
+    9: error:
+   10: expr: NAME NUM
+   11: func: NAME
+   12: main: NAME NUM
+   13: state: NAME NUM

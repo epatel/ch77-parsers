@@ -1,0 +1,120 @@
+%include {   
+
+  #include "parser_globals.h"
+  #include "parser.h"
+
+  #include <assert.h>
+  #include <stdlib.h>
+
+  struct Token *token_constructor() {
+    struct Token *token = (struct Token*)malloc(sizeof(struct Token));
+    token->value = 0;
+    token->string = NULL;
+    return token;
+  }
+
+  void token_destructor(struct Token *t) {
+    if (t->string)
+      free(t->string);
+    free(t);
+  }
+
+  void (*result_callback)(float value);
+  void (*error_callback)(char *str);
+
+}
+
+%name MP_lemon_Parse
+
+%token_type {struct Token*}
+%token_destructor {token_destructor($$);}
+
+%type expr {struct Token*}
+%destructor expr {token_destructor($$);}
+
+%type func {struct Token*}
+%destructor func {token_destructor($$);}
+   
+%left PLUS MINUS.   
+%left DIVIDE TIMES.  
+   
+%parse_accept {
+  printf("Parsing complete...\n");
+}
+   
+%parse_failure {
+  printf("Parsing failed...\n");
+  error_callback("Failed");
+}
+
+%syntax_error {  
+  printf("Syntax error...\n");
+  error_callback("Syntax error");
+}
+   
+main ::= state.
+
+state ::= expr(A). { 
+  printf("Result.value=%f\n", A->value);
+  result_callback(A->value);
+  token_destructor(A);
+}  
+
+expr(A) ::= expr(B) MINUS  expr(C). { 
+  A = token_constructor();
+  A->value = B->value - C->value;
+  token_destructor(B);
+  token_destructor(C);
+}  
+
+expr(A) ::= expr(B) PLUS  expr(C). { 
+  A = token_constructor();
+  A->value = B->value + C->value; 
+  token_destructor(B);
+  token_destructor(C);
+}  
+
+expr(A) ::= expr(B) TIMES  expr(C). { 
+  A = token_constructor();
+  A->value = B->value * C->value;
+  token_destructor(B);
+  token_destructor(C);
+}  
+
+expr(A) ::= expr(B) DIVIDE expr(C). { 
+  A = token_constructor();
+  if (C->value != 0) {
+    A->value = B->value / C->value;
+  } else {
+    printf("Divide by zero\n");
+  }
+  token_destructor(B);
+  token_destructor(C);
+}
+
+expr(A) ::= func(B). {
+  A = token_constructor();
+  A->value = B->value; 
+  token_destructor(B);
+}
+
+func(A) ::= NAME(B) LEFTPAREN expr(C) RIGHTPAREN. {
+  A = token_constructor();
+  A->value = C->value; 
+  printf("Lookup function: %s\n", B->string);
+  token_destructor(B);
+  token_destructor(C);
+}
+
+expr(A) ::= NUM(B). {
+  A = token_constructor();
+  A->value = B->value; 
+  token_destructor(B);
+}
+
+expr(A) ::= NAME(B). {
+  A = token_constructor();
+  A->value = B->value; 
+  printf("Lookup variable: %s\n", B->string);
+  token_destructor(B);
+}
